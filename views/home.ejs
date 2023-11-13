@@ -1,0 +1,45 @@
+<%- include('./includes/header.ejs', { title: title }) %>
+    <div class="container py-5">
+        <div class="row align-content-center justify-content-center">
+            <div class="col-md-12">
+                <div class="table-resposive">
+                    <table class="table table-bordered py-2" id="table">
+                        <thead class="text-white" style="background-color: #073b4c;">
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Salary</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% emps.forEach(element=> { %>
+                                <tr>
+                                    <td>
+                                        <%= element.name %>
+                                    </td>
+                                    <td>
+                                        <%= element.email %>
+                                    </td>
+                                    <td>
+                                        <%= element.salary %>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <a href="edit/<%= element.id %>"><button class="btn text-white"
+                                                    style="background-color: #118ab2;">Edit</button></a>
+                                            <form method="POST" action="delete/<%= element.id %>">
+                                                <button type="submit" class="btn text-white"
+                                                    style="background-color: #ef476f;">Delete</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%- include('./includes/footer.ejs') %>

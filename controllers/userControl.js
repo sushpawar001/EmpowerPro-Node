@@ -11,10 +11,13 @@ const signupGet = (req, res) => {
 
 const signupPost = async (req, res) => {
     const { username, email, password } = req.body;
-
-    const hashpass = await bcrypt.hash(password, 10);
-    const user = await userModel.create({ username: username, email: email, password: hashpass })
-    res.redirect('./login/?signup=success');
+    try {
+        const hashpass = await bcrypt.hash(password, 10);
+        const user = await userModel.create({ username: username, email: email, password: hashpass })
+        res.redirect('./login/?signup=success');
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 const loginGet = (req, res) => {
@@ -24,22 +27,25 @@ const loginGet = (req, res) => {
 
 const loginPost = async (req, res) => {
     const { username, password } = req.body;
+    try {
+        const user = await userModel.findOne({ username: username });
 
-    const user = await userModel.findOne({ username: username });
+        if (user) {
+            const matchPass = await bcrypt.compare(password, user.password);
 
-    if (user) {
-        const matchPass = await bcrypt.compare(password, user.password);
+            if (matchPass) {
+                const token = jwt.sign({ user: user._id }, process.env.SECRET_KEY);
 
-        if (matchPass) {
-            const token = jwt.sign({ user: user._id }, process.env.SECRET_KEY);
-
-            res.cookie('token', token);
-            res.redirect('/employee');
+                res.cookie('token', token);
+                res.redirect('/employee');
+            } else {
+                res.status(401).send('Invalid Password');
+            }
         } else {
-            res.status(401).send('Invalid Password');
+            res.status(401).send('User Does not exist!');
         }
-    } else {
-        res.status(401).send('User Does not exist!');
+    } catch (error) {
+        console.log(error);
     }
 }
 
